@@ -31,3 +31,17 @@ module Lab2 where
              | (c1 - c2) ^ 2 > d || (c1 + c2) ^ 2 < d = 0
              | otherwise = 2
     in iter x1 y1 r1 x2 y2 r2 dist 
+ 
+ f1 :: Integer -> Integer -> Integer 
+ f1 x y = x ^ y
+ f1' = (^)
+ f2 :: Integer -> Integer -> Integer 
+ f2 x y = (x + 1) ^ y
+ f2' = (^) . (+ 1)
+ f3 :: Integer -> Integer -> Integer
+ f3 x y = x ^ (y - 3)
+ h3 = negate . (3 - )
+ f3' = flip $ flip f1' . h3
+ f4 :: Integer -> Integer -> Integer
+ f4 x y = (x + 1) ^ (y - 3)
+ f4' =  f3'. (+ 1)
