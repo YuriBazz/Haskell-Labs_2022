@@ -1,5 +1,8 @@
+
 module Lab2 where 
- 
+ fact :: Int -> Int
+ fact n = if n == 0 then 1 else n * fact (n - 1)
+
  dFact :: Integer -> Integer 
  dFact n 
      | n == 1 = 1
@@ -31,7 +34,24 @@ module Lab2 where
              | (c1 - c2) ^ 2 > d || (c1 + c2) ^ 2 < d = 0
              | otherwise = 2
     in iter x1 y1 r1 x2 y2 r2 dist 
- 
+
+ smallerX :: Double -> Double
+ mySin :: Double -> Double -> Double
+ smallerX x 
+     | x >= 0 && x < 2 * pi = x
+     | otherwise = smallerX (x - 2 * pi)
+ mySin x eps =
+    let 
+        iter :: Double -> Double -> Double -> Double 
+        iter x eps k
+             | abs a <= eps = 0
+             | otherwise = a + iter x eps (k + 1) 
+             where 
+                a = ((-1) ^ round k) * (x ^ (1 + 2 *  round k))  / (fromIntegral (fact (1 + 2 * round k)))
+                
+    in
+        iter (smallerX x) eps 0
+
  f1 :: Integer -> Integer -> Integer 
  f1 x y = x ^ y
  f1' = (^)
