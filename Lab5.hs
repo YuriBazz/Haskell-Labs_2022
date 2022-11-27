@@ -83,6 +83,7 @@ module Lab5 where
       mySort = sortBy (\x y -> myCompare x y)
    in
       find (\x-> n <= sum (map xp x))  (tail $ subsequences $ mySort lst)
+      -- возможно нужно будет сортить по суммам хр
 
 -- д) 
 
