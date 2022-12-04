@@ -1,4 +1,5 @@
 module Lab6 where
+-- ЕБАЛ Я В РОТ ЭТУ ЛАБУ
  import Data.List
  import Data.Maybe
 
