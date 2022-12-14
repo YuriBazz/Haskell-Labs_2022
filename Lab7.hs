@@ -1,3 +1,4 @@
+-- БЛАГОДАРЮ "RacketBoys team" ЗА ПРЕДОСТАВЛЕННУЮ К СРОКУ СДАЧИ ЛАБОРАТОРКУ
 module Lab7 where
  import Data.Maybe
  import Data.Tuple
