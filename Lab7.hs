@@ -1,4 +1,3 @@
--- БЛАГОДАРЮ "RacketBoys team" ЗА ПРЕДОСТАВЛЕННУЮ К СРОКУ СДАЧИ ЛАБОРАТОРКУ
 module Lab7 where
  import Data.Maybe
  import Data.Tuple
@@ -13,7 +12,7 @@ module Lab7 where
 
  --2) 
  addToList :: [Maybe Int] -> [Maybe Int]
- addToList l = map (\x -> Just ((+) 3 $ fromJust x)) l
+ addToList l = map (\x -> if x == Nothing then x else Just ((+) 3 $ fromJust x)) l
  
  addToList' :: [Maybe Int] -> [Maybe Int]
  addToList' l = fmap (+3) <$> l
@@ -30,8 +29,11 @@ module Lab7 where
 
  newGrowth2' :: (Int, String) -> Int -> (Int, String)
  newGrowth2' x z = swap (newGrowth1' (swap x) z)
+ --4)
+ nomeroQuatro :: [(String, Int)] -> Int -> [(String, Int)]
+ nomeroQuatro l x = fmap (flip newGrowth1' x)  l
 
- -- 4)
+ -- 5)
  data Point = Point { x :: Double, y :: Double }
     deriving (Show, Ord, Eq)
  data Line = Line { a :: Double, b :: Double, c :: Double }
