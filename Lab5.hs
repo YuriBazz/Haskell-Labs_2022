@@ -1,4 +1,3 @@
--- ВНИМАНИЕ!!!! НЕ БЕРИТЕ ЭТУ ЛАБУ, ПОКА НЕ ИСЧЕЗНЕТ ЭТА НАДПИСЬ. ПОСЛЕДНИЕ ЗАДАЧИ РАБОТАЮТ НА ДОБРОМ СЛОВЕ, ТАК ЧТО ЖДЕМ ПРОВЕРКИ!!!!!!!
 module Lab5 where
  import Data.List
  import Data.Maybe
@@ -40,9 +39,9 @@ module Lab5 where
 -- Задача 2
 
  data AttributeName = Str | Dex | Wis | Acrobatics | Berserk | SpellCraft
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
  data Hero = Hero {name :: String , xp :: Int , traits :: [(AttributeName, Int)]}
-    deriving Show
+    deriving (Show, Ord, Eq)
 
  hero1 = Hero "Ornshtain" 100 [(Str, 15), (Dex, 20), (Wis, 10), (Acrobatics, 25), (Berserk, 20), (SpellCraft, 0)]
  hero2 = Hero "Smought" 100 [(Str, 20), (Dex, 15), (Wis, 10), (Acrobatics, 10), (Berserk, 30), (SpellCraft, 0)]
@@ -67,43 +66,78 @@ module Lab5 where
         where 
             y = traits hero
             x = lookup atr y
-            x' = fromJust x
+            x' = fromJust x 
 
 -- г)
  
  mightyTeam :: Int -> [Hero] -> Maybe [Hero]
- mightyTeam n lst = 
+ mightyTeam n heroes = 
    let 
-      myCompare a b =
-         if xp a == xp b then EQ
+      l = sortBy (flip compare) $ map (\hero -> (xp hero, hero)) heroes
+      listScores = map fst l
+      listHeroes = map snd l
+   in 
+      if sum listScores < n 
+         then Nothing
          else 
-            if xp a < xp b 
-               then GT
-               else LT
-      mySort = sortBy (\x y -> myCompare x y)
-   in
-      find (\x-> n <= sum (map xp x))  (tail $ subsequences $ mySort lst)
-      
+            Just (take (length $ takeWhile (\(s, scores) -> s < n && not (null scores)) $
+            iterate (\(s, scores) -> (s + ((!! 0) scores), (tail scores))) (0, listScores)) listHeroes)
 
 -- д) 
 
- gatherTeam :: [(AttributeName, Int)] -> [Hero] -> Maybe [Hero]
- gatherTeam atrList heroList = 
-   let
-      f (atr, n) list = any (\x -> isJust (lookup atr (traits x)) && fromJust (lookup atr (traits x)) >= n ) list
-      iter atrList heroList 
-         | null atrList = True
-         | otherwise = f (head atrList) heroList && iter (tail atrList) heroList
+ gatherTeam :: [(AttributeName,Int)] -> [Hero] -> Maybe [Hero]
+ gatherTeam attributes heroes
+       |null $ fst pairAttributesHeroes = Just $ snd pairAttributesHeroes
+       |otherwise = Nothing
+       where 
+         pairAttributesHeroes = gatherTeam' attributes heroes 
+
+ gatherTeam' attributes heroes = foldl (\res hero -> foldl (\res@(attrs, gathered) trait -> 
+   let 
+      attribute = filter ((== (fst trait)) . fst) attrs
+      otherAttributes = filter ((/= (fst trait)) . fst) attrs 
    in
-      if iter atrList heroList
-         then Just heroList
-         else Nothing
+      if null attribute || (snd trait) < (snd $ head attribute) 
+         then res
+         else 
+            if elem hero gathered 
+               then (otherAttributes, gathered)
+               else (otherAttributes, hero : gathered)) res (traits hero)) (attributes, []) heroes  
  
  -- е) 
 
  solidTeam :: [(AttributeName,Int)] -> [Hero] -> Maybe [Hero]
- solidTeam atrList heroList =
-   let
-      x = sortBy (\x y -> compare (length x) (length y)) $ subsequences heroList
-   in
-      find (\x -> isJust $ gatherTeam atrList x) x
+ solidTeam attributes heroes
+       |null $ fst pairAttributesHeroes = Just $ optimiseTeam attributes (snd pairAttributesHeroes)
+       |otherwise = Nothing
+       where 
+          pairAttributesHeroes = gatherTeam' attributes heroes 
+
+ optimiseTeam :: [(AttributeName,Int)] -> [Hero] -> [Hero]
+ optimiseTeam attributes heroes =
+   let 
+      vectorsHeroes = map (\hero@(Hero _ _ traits) -> (help attributes traits, hero)) heroes 
+      optimisedHeroes = foldl (\vectorsHeroes vectorHero -> 
+         let 
+            newVectorsHeroes = (delete vectorHero vectorsHeroes)
+            res = foldl1 (zipWith (+)) $ map fst $ newVectorsHeroes 
+         in
+            if elem 0 res
+               then vectorsHeroes
+               else newVectorsHeroes) vectorsHeroes vectorsHeroes
+   in 
+      map snd $ optimisedHeroes
+
+
+ help :: [(AttributeName,Int)] -> [(AttributeName,Int)] -> [Int]
+ help attributes traits = 
+   foldl (\v attribute -> 
+      let 
+         requiredAttribute = filter ((== (fst attribute)) . fst) traits 
+      in 
+         if null requiredAttribute 
+            then 0 : v
+            else 
+               if (snd attribute) > (snd $ head requiredAttribute) 
+               then 0 : v
+               else 1 : v) [] attributes
