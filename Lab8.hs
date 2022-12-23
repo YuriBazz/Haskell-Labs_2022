@@ -1,3 +1,6 @@
+-- Благодарность Артему Левакову за предоставленную лабораторку
+-- Стиль я исправлять не буду
+
 {-# LANGUAGE MultiWayIf, DatatypeContexts #-}
 
 import Data.List
