@@ -1,3 +1,5 @@
+-- Благодарность Артему Левакову за предоставленную лабораторку
+
 {-# LANGUAGE MultiWayIf #-}
 import System.IO
 import Data.List
